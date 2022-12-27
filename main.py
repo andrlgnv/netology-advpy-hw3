@@ -18,8 +18,9 @@ soup1 = BeautifulSoup(resp, 'lxml')
 page_count = soup1.find('div', attrs={'class': 'pager'}).find_all('span', recursive=False)[-1].find('a').find(
     'span').text
 
-job_info = []
+
 def get_data():
+    job_info = []
     # цикл по каждой странице
     for page in range(int(page_count)):
         url = f'https://hh.ru/search/vacancy?text=python&area=1&area=2&page={page}'
