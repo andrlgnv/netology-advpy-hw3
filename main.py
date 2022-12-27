@@ -18,12 +18,11 @@ soup1 = BeautifulSoup(resp, 'lxml')
 page_count = soup1.find('div', attrs={'class': 'pager'}).find_all('span', recursive=False)[-1].find('a').find(
     'span').text
 
-
+job_info = []
 def get_data():
-    job_info = []
     # цикл по каждой странице
     for page in range(int(page_count)):
-        url = 'https://hh.ru/search/vacancy?text=python&area=1&area=2&page={page}'
+        url = f'https://hh.ru/search/vacancy?text=python&area=1&area=2&page={page}'
         response = requests.get(url, headers=get_headers()).text
         soup = BeautifulSoup(response, 'lxml')
         #
@@ -47,10 +46,11 @@ def get_data():
             job_html = requests.get(job_link, headers=get_headers()).text
             html_body = BeautifulSoup(job_html, 'lxml')
             try:
-                descr = html_body.find('div', attrs={'class': 'g-user-content', 'data-qa': 'vacancy-description'}).text
-            except AttributeError:
                 descr = html_body.find('div', attrs={'class': 'vacancy-branded-user-content', 'data-qa': 'vacancy'
                                                                                                          '-description'}).text
+            except:
+                descr = html_body.find('div', attrs={'class': 'g-user-content', 'data-qa': 'vacancy-description'}).text
+
             if 'django' in descr.lower() and 'flask' in descr.lower():
                 job_info.append(
                     {
@@ -60,7 +60,7 @@ def get_data():
                         'salary': salary
                     }
                 )
-        time.sleep(1)
+            time.sleep(1.1)
         print(f'Обработано страниц {page + 1}/{page_count}')
 
     # запись полученного списка в файл
